@@ -2,9 +2,7 @@
     "swagger": "2.0",
     "info": {
         "title": "REST API Documentation for Oracle Process Cloud Service",
-        "version": "3.0",
-        "description": "Use the Oracle Process Cloud Service REST API to manage analytic data, process instance archives, identities, process definitions, processes, tasks, and system information.",
-        "x-summary": "Use the Oracle Process Cloud Service REST API to manage analytic data, process instance archives, identities, process definitions, processes, tasks, and system information."
+        "version": "3.0"
     },
     "host": "den01dli.us.oracle.com:7001",
     "basePath": "/bpm/api/3.0",
