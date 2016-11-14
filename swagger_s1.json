@@ -6,10 +6,7 @@
     },
     "host": "den01dli.us.oracle.com:7001",
     "basePath": "/bpm/api/3.0",
-    "schemes": [
-        "http",
-        "https"
-    ],
+    "schemes": ["https"],
     "paths": {
         "/process-definitions/{processDefId}/documents": {
             "get": {
