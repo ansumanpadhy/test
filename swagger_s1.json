@@ -10,59 +10,591 @@
   },
   "host" : "localhost:7001",
   "basePath" : "/bpm/api/4.0",
-  "tags" : [  {
-    "name" : "Manage Process Definitions",
-    "description" : "Retrieve process definitions, form instances, and form payloads."
-  }],
+  "tags" : [ {
+    "name" : "Manage Processes",
+    "description" : "Create and retrieve information about process instances."
+  } ],
   "schemes" : [ "http", "https" ],
   "paths" : {
-    "/process-definitions": {
-      "get": {
-        "tags": [
-          "Manage Process Definitions"
-        ],
-        "summary": "Retrieve Process Definitions.",
-        "description": " Retrieves process definitions.",
-        "operationId": "getDefinitions",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "interfaceFilter",
-            "in": "query",
-            "description": "Filters the process definitions based on start type, currently supports filters for form based start (includes both webForm and basicForm), webForm based start, basicForm based start, doc based start and folder based start.",
-            "required": false,
-            "type": "string",
-            "default": "all",
-            "enum": [
-              "all",
-              "form",
-              "noForm",
-              "basicForm",
-              "webForm",
-              "doc",
-              "folder"
-            ]
+   
+    "/processes" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieves Process Instance List.",
+        "description" : " Retrieves process instance list",
+        "operationId" : "getProcesses",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "view",
+          "in" : "query",
+          "description" : "View name",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "processDefId",
+          "in" : "query",
+          "description" : "Process definition ID",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "processName",
+          "in" : "query",
+          "description" : "Processinstance name",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
           },
-          {
-            "name": "showProcessInstancesCount",
-            "in": "query",
-            "description": "True to get processcount else false",
-            "required": false,
-            "type": "string",
-            "default": "false"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "$ref": "#/definitions/ProcessDefs"
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "priority",
+          "in" : "query",
+          "description" : "Process priority from 1 (highest) to 5 (lowest) or Any (default)",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "processOwner",
+          "in" : "query",
+          "description" : "Process instance owner",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "processCreator",
+          "in" : "query",
+          "description" : "Process instance creator",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "processState",
+          "in" : "query",
+          "description" : "Process state",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "default" : "OPEN"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "assignmentFilter",
+          "in" : "query",
+          "description" : "Assignment filter",
+          "required" : false,
+          "type" : "string",
+          "default" : "MY_AND_GROUP"
+        }, {
+          "name" : "dueDateFrom",
+          "in" : "query",
+          "description" : "Start of due date range in the format yyyy-mm-dd hh:mm:ss",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "dueDateTo",
+          "in" : "query",
+          "description" : "End of due date range in the format yyyy-mm-dd hh:mm:ss",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Maximum number of items per page, between 1 and 100, default 25",
+          "required" : false,
+          "type" : "integer",
+          "default" : 25,
+          "format" : "int32"
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "description" : "Index for the first item on a page of list items",
+          "required" : false,
+          "type" : "integer",
+          "default" : 0,
+          "format" : "int32"
+        }, {
+          "name" : "orderBy",
+          "in" : "query",
+          "description" : "Field with which results are to be ordered",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "totalResult",
+          "in" : "query",
+          "description" : "Total Result - true or false",
+          "required" : false,
+          "type" : "boolean",
+          "default" : true
+        }, {
+          "name" : "since",
+          "in" : "query",
+          "description" : "Returned items must be created or updated later than the specified time, format yyyy-mm-dd hh:mm:ss",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "until",
+          "in" : "query",
+          "description" : "Returned items must be created or updated before the specified time, format yyyy-mm-dd hh:mm:ss",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "schema" : {
+              "$ref" : "#/definitions/Collection"
             }
           },
-          "500": {
-            "description": "Error in retrieving the process definitions"
+          "400" : {
+            "description" : "Bad request"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "404" : {
+            "description" : "Process list not found"
+          },
+          "500" : {
+            "description" : "Something went wrong"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Create a Process Instance.",
+        "description" : " Creates a new process instance or saves a process instance based on the value of action in the input. The resource takes a multipart input if looking to create a process instance with attachments - JSON as first body  part and attachments as the remaining body parts. The process instance can also be created with only JSON payload to create a process instance if attachments are not needed. The operation and serviceName values in the input payload are optional - if not specified 'operation' defaults to 'start'.",
+        "operationId" : "postMessage",
+        "consumes" : [ "multipart/mixed" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "Process Instance succesfully created",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessInstance"
+            }
+          },
+          "500" : {
+            "description" : "Something went wrong"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Perform Actions on List of Instances.",
+        "description" : " Performs actions on instance list",
+        "operationId" : "performActionsOnInstanceList",
+        "produces" : [ "application/json", "text/plain" ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "304" : {
+            "description" : "Not Modified"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "description" : "Something went wrong"
+          }
+        }
+      }
+    },
+    "/processes/{processId}" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieve a Process Instance.",
+        "description" : " Retrieves a process instance",
+        "operationId" : "getProcess",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "isProcessNumberFlag",
+          "in" : "query",
+          "description" : "Value of processNumber, if true it will fetch process instance by number, if false it will return process instance by instanceId",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessInstance"
+            }
+          },
+          "500" : {
+            "description" : "Something went wrong"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Update the Process State.",
+        "description" : " Updates the state of the  process to the action value. ",
+        "operationId" : "performProcessAction",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json", "text/plain" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Payload of process",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Action"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "304" : {
+            "description" : "Not Modified"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "404" : {
+            "description" : "Not Found"
+          },
+          "500" : {
+            "description" : "Internal server error"
+          }
+        }
+      }
+    },
+    "/processes/{processId}/attachments" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieve Attachment List for a Process Instance.",
+        "description" : " Retrieves a list of attachments for a process instance.",
+        "operationId" : "getProcessAttachments",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "500" : {
+            "description" : "Something went wrong"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Add Attachment to the Process.",
+        "description" : " Adds attachments to a process. ",
+        "operationId" : "addProcessAttachment",
+        "consumes" : [ "multipart/mixed" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "multiPartAttachment",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/MultiPart"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "500" : {
+            "description" : "Internal server error"
+          }
+        }
+      }
+    },
+    "/processes/{processId}/attachments/{attachmentId}" : {
+      "delete" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Delete Process Attachments.",
+        "description" : " Deletes process attachments.",
+        "operationId" : "deleteProcessAttachment",
+        "produces" : [ "text/plain" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "attachmentId",
+          "in" : "path",
+          "description" : "Value of attachment name",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "description" : "Internal server error"
+          }
+        }
+      }
+    },
+    "/processes/{processId}/audit" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieve Audit Diagram of Process Instance.",
+        "description" : " Retrieves the audit diagram of a process instance.",
+        "operationId" : "getAuditDiagram",
+        "produces" : [ "image/png", "application/json", "text/plain" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "graphic",
+          "in" : "query",
+          "description" : "Value of graphic mode, true for png output, false for histories",
+          "required" : false,
+          "type" : "boolean",
+          "default" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "500" : {
+            "description" : "Something went wrong"
+          }
+        }
+      }
+    },
+    "/processes/{processId}/comments" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieve Comment List for a Process Instance.",
+        "description" : " Retrieves a list of comments for a process instance.",
+        "operationId" : "getProcessComments",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "description" : "Something went wrong"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Add Comment to the Process.",
+        "description" : " Adds comments to a process",
+        "operationId" : "addProcessComments",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "CommentRequest",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CommentRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "500" : {
+            "description" : "Internal server error"
+          }
+        }
+      }
+    },
+    "/processes/{processId}/conversations" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieve Conversations for a Process Instance",
+        "description" : "Retrieves the conversations associated with the process instance.",
+        "operationId" : "getConversationsByProcessId",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "description" : "Retrieves only the conversation for the specified conversation name",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. Returns the conversations or empty list when there aren't any.",
+            "schema" : {
+              "$ref" : "#/definitions/ConversationInstances"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "500" : {
+            "description" : "Error in retrieving the conversation information"
+          }
+        }
+      }
+    },
+    "/processes/{processId}/conversations/{conversationId}" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieve a Conversation for a Process Instance",
+        "description" : "Retrieve conversations associated with the process instance based on conversationId.",
+        "operationId" : "getConversationByProcessId",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of process ID.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "conversationId",
+          "in" : "path",
+          "description" : "Value of conversation ID.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. Returns the conversations or empty list when there aren't any.",
+            "schema" : {
+              "$ref" : "#/definitions/ConversationInstance"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "500" : {
+            "description" : "Error in retrieving the conversation information"
+          }
+        }
+      }
+    },
+    "/processes/{processId}/folders" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieve list of DOCs Folders for a Process",
+        "description" : " Retrieves the DOCs folders associated with a process.",
+        "operationId" : "getProcessFolders",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of Process ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "description" : "Retrieves only the folder for the specified folder name",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "schema" : {
+              "$ref" : "#/definitions/DcsFolders"
+            }
+          },
+          "500" : {
+            "description" : "Something went wrong"
+          }
+        }
+      }
+    },
+    "/processes/{processId}/folders/{folderId}" : {
+      "get" : {
+        "tags" : [ "Manage Processes" ],
+        "summary" : "Retrieve DOCs Folder for a Process",
+        "description" : " Retrieves the folder details for a given folder associated with a process.",
+        "operationId" : "getProcessFolderById",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "processId",
+          "in" : "path",
+          "description" : "Value of Process Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "folderId",
+          "in" : "path",
+          "description" : "Folder ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "schema" : {
+              "$ref" : "#/definitions/DcsFolder"
+            }
+          },
+          "500" : {
+            "description" : "Something went wrong"
           }
         }
       }
